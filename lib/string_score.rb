@@ -1,0 +1,3 @@
+module StringScore
+  # Your code goes here...
+end
