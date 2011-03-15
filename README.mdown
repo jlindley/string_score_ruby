@@ -1,0 +1,5 @@
+String Score (Ruby)
+===
+
+Port of https://github.com/joshaven/string_score from js to ruby.
+

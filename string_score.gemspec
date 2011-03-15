@@ -6,11 +6,11 @@ Gem::Specification.new do |s|
   s.name        = "string_score"
   s.version     = StringScore::VERSION
   s.platform    = Gem::Platform::RUBY
-  s.authors     = ["TODO: Write your name"]
-  s.email       = ["TODO: Write your email address"]
+  s.authors     = ["Jim Lindley"]
+  s.email       = ["mail@jim.io"]
   s.homepage    = ""
-  s.summary     = %q{TODO: Write a gem summary}
-  s.description = %q{TODO: Write a gem description}
+  s.summary     = %q{Score how close a string is to another string.}
+  s.description = %q{Port of https://github.com/joshaven/string_score from js to ruby.}
 
   s.rubyforge_project = "string_score"
 
@@ -18,4 +18,8 @@ Gem::Specification.new do |s|
   s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
   s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
   s.require_paths = ["lib"]
+
+
+  s.add_development_dependency "rspec", '~>2.5.0'
+
 end
