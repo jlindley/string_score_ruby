@@ -14,12 +14,6 @@ RSpec::Matchers.define :be_less_than do |expected|
   end
 end
 
-RSpec::Matchers.define :be_about do |expected|
-  match do |actual|
-    expected.to_f.round(5) == actual.to_f.round(5) # to 3 decimal points
-  end
-end
-
 describe StringScore do
 
   subject { StringScore.new('Hello World') }
@@ -98,7 +92,7 @@ describe StringScore do
 
   it "gives start of string bonuses" do
     "Mary Large".score('mar').should be_greater_than("Large Mary".score('mar'))
-    "Silly Mary Large".score('mar').should be_about("Silly Large Mary".score('mar'))
+    "Silly Mary Large".score('mar').should == "Silly Large Mary".score('mar')
   end
 
 
