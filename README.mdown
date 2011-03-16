@@ -9,20 +9,20 @@ string to the base string.
 Usage
 ---
 
-  gem install string_score
-
-  scorer = StringScore.new("string to test against")
-  scorer.score("string to test")
+    gem install string_score
+    
+    scorer = StringScore.new("string to test against")
+    scorer.score("string to test")
 
 Or, include it into String for a convenience method:
 
 
-  String.send(:include, StringScore)
-
-  # and then
-
-  "Hello World".score("hello")
-  "Hello World".score("Whirl", 0.5) # or for fuzzy
+    String.send(:include, StringScore)
+    
+    # and then
+    
+    "Hello World".score("hello")
+    "Hello World".score("Whirl", 0.5) # or for fuzzy
 
 Copyright
 ---
