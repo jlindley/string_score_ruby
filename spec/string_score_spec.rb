@@ -110,4 +110,46 @@ describe StringScore do
     subject.score('Hz', 0.9).should be_greater_than(subject.score('Hz', 0.5))
   end
 
+  it "accepts an array of values to score" do
+    subject.sort_by_score(["Hello"]).should be_kind_of(Array)
+  end
+
+  it "sorts a passed array by score, highest to lowest" do
+    subject.sort_by_score(["xyz", "Hello", "hello"]).should == ["Hello", "hello", "xyz"]
+  end
+
+  it "sorts equal matches alphabetically" do
+    subject.score("ell").should == subject.score("llo")
+    subject.sort_by_score(["llo", "ell"]).should == ["ell", "llo"]
+  end
+
+  it "passes fuzziness checks through with arrays" do
+    subject.sort_by_score(["hey", "abc"]).should == ['abc', 'hey']
+    subject.sort_by_score(["hey", "abc"], 0.5).should == ['hey', 'abc']
+  end
+
+  it "accepts a block to provide a scoring target for non-string lists" do
+    nested_list = [
+      [nil, "there"],
+      [nil, "hello"],
+      [nil, "World"]
+    ]
+
+    expected_sort = [
+      [nil, "hello"],
+      [nil, "World"],
+      [nil, "there"]
+    ]
+
+    subject.sort_by_score(nested_list){|t| t[1] }.should == expected_sort
+  end
+
+  it "raises an argument error if passed an invalid score target" do
+    expect { subject.score(nil) }.to raise_error(StringScore::ArgumentError)
+  end
+
+  it "raises an argument error if passed an invalid sort target" do
+    expect { subject.sort_by_score(nil) }.to raise_error(StringScore::ArgumentError)
+  end
+
 end
