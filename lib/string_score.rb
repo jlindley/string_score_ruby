@@ -4,11 +4,11 @@ module StringScore
   class ArgumentError < RuntimeError; end
 
   def score(target_string, fuzziness = 0.0)
-    if @string_scorer && @string_scorer.base_string != self
-      @string_scorer = nil
-    end
-    @string_scorer ||= StringScore.new(self, fuzziness)
-    @string_scorer.score(target_string)
+    StringScore.new(self, fuzziness).score(target_string)
+  end
+
+  def sort_by_score(target, fuzziness = 0.0, &block)
+    StringScore.new(self, fuzziness).sort_by_score(target)
   end
 
   # proxy to Scorer to simplify calling API

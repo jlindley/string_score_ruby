@@ -1,6 +1,5 @@
 require 'string_score'
-
-String.send(:include, StringScore)
+require 'string_score/ext/string'
 
 RSpec::Matchers.define :be_greater_than do |expected|
   match do |actual|
@@ -18,7 +17,7 @@ describe StringScore do
 
   subject { StringScore.new('Hello World') }
 
-  it "provides a method directly on a string instance" do
+  it "provides a method directly on a string instance for scoring" do
     "foobar".score('foo').should == StringScore.new("foobar").score('foo')
   end
 
@@ -112,6 +111,11 @@ describe StringScore do
 
   it "accepts an array of values to score" do
     subject.sort_by_score(["Hello"]).should be_kind_of(Array)
+  end
+
+  it "provides a method directly on a string instance for scoring" do
+    target_list = ['foo', 'foobar', 'xyz']
+    "foobar".sort_by_score(target_list).should == StringScore.new("foobar").sort_by_score(target_list)
   end
 
   it "sorts a passed array by score, highest to lowest" do
