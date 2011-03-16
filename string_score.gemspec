@@ -7,7 +7,7 @@ Gem::Specification.new do |s|
   s.version     = StringScore::VERSION
   s.platform    = Gem::Platform::RUBY
   s.authors     = ["Jim Lindley"]
-  s.email       = ["mail@jim.io"]
+  s.email       = ["jim@jimlindley.com"]
   s.homepage    = ""
   s.summary     = %q{Score how close a string is to another string.}
   s.description = %q{Port of https://github.com/joshaven/string_score from js to ruby.}
