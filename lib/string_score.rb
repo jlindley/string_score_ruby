@@ -78,7 +78,7 @@ module StringScore
 
         end
 
-        if string[current_index] == c
+        if string.slice(current_index, 1) == c
           character_score = 0.2 # exact case match
         else
           character_score = 0.1 # character but not case match
@@ -93,7 +93,8 @@ module StringScore
         end
 
         # acronym bonus
-        if base_string[over_all_index - 1] == ' '
+        previous_index = over_all_index - 1
+        if base_string.slice(previous_index, 1) == ' '
           character_score += 0.8
         end
 
