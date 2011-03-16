@@ -4,164 +4,116 @@ String.send(:include, StringScore)
 
 RSpec::Matchers.define :be_greater_than do |expected|
   match do |actual|
-    actual > expected
+    expected < actual
   end
 end
 
 RSpec::Matchers.define :be_less_than do |expected|
   match do |actual|
-    actual < expected == 0
+    expected > actual
+  end
+end
+
+RSpec::Matchers.define :be_about do |expected|
+  match do |actual|
+    expected.to_f.round(5) == actual.to_f.round(5) # to 3 decimal points
   end
 end
 
 describe StringScore do
 
+  subject { StringScore.new('Hello World') }
+
   it "provides a method directly on a string instance" do
     "foobar".score('foo').should == StringScore.new("foobar").score('foo')
   end
 
-  describe "standalone use" do
-
-    subject { StringScore.new('Hello World') }
-
-    it "scores at 1 for exact match" do
-      subject.score('Hello World').should == 1
-    end
-
-    # probably rare but need to handle just in case
-    it "allows updates of string to match against" do
-      string_to_match = "Hello World"
-      string_to_match.score('Hello World').should == 1
-      string_to_match.gsub!(/\w/, 'X')
-      string_to_match.score('Hello World').should_not == 1
-    end
-
-    it "scores 0 for non-matches (character not in string)" do
-      subject.score("hellx").should == 0
-      subject.score("hello_world").should == 0
-    end
-
-    it "matches sequentially" do
-      subject.score('WH').should == 0
-    end
-
-    it "prefers same-case matches" do
-      subject.score('hello').should be_less_than(subject.score('Hello'))
-    end
-
+  it "scores at 1 for exact match" do
+    subject.score('Hello World').should == 1
   end
 
-  #     test('Same case should match better then wrong case', function(){
-  #     });
+  # probably rare but need to handle just in case
+  it "allows updates of string to match against" do
+    string_to_match = "Hello World"
+    string_to_match.score('Hello World').should == 1
+    string_to_match.gsub!(/\w/, 'X')
+    string_to_match.score('Hello World').should_not == 1
+  end
 
-  #     test('Higher score for closer matches', function(){
-  #       ok('Hello World'.score('H')<'Hello World'.score('He'), '"He" should match "Hello World" better then "H" does');
-  #     });
+  it "scores 0 for non-matches (character not in string)" do
+    subject.score("hellx").should == 0
+    subject.score("hello_world").should == 0
+  end
 
-  #     test('Matching with wrong case', function(){
-  #       ok("Hillsdale Michigan".score("himi")>0, 'should match first matchable letter regardless of case');
-  #     });
+  it "matches sequentially" do
+    subject.score('WH').should == 0
+  end
 
-  #     test('should have proper relative weighting', function(){
-  #       ok( "hello world".score("e")          < "hello world".score("h") );
-  #       ok( "hello world".score("h")          < "hello world".score("he") );
-  #       ok( "hello world".score("hel")        < "hello world".score("hell") );
-  #       ok( "hello world".score("hell")       < "hello world".score("hello") );
-  #       ok( "hello world".score("hello")      < "hello world".score("helloworld") );
-  #       ok( "hello world".score("helloworl")  < "hello world".score("hello worl") );
-  #       ok( "hello world".score("hello worl") < "hello world".score("hello world") );
-  #     });
+  it "prefers same-case matches" do
+    subject.score('hello').should be_less_than(subject.score('Hello'))
+  end
 
-  #   module('Advanced Scoreing Methods');
-  #     test('consecutive letter bonus', function(){
-  #       expect(1);
-  #       ok('Hello World'.score('Hel') > 'Hello World'.score('Hld'), '"Hel" should match "Hello World" better then "Hld"');
-  #     });
+  it "scores higher on closers matchs" do
+    subject.score('H').should be_less_than(subject.score('He'))
+  end
 
-  #     test('Acronym bonus', function(){
-  #       expect(6);
-  #       ok('Hello World'.score('HW') > 'Hello World'.score('Ho'), '"HW" should score higher with "Hello World" then Ho');
-  #       ok('yet another Hello World'.score('yaHW') > 'Hello World'.score('yet another'));
-  #       ok("Hillsdale Michigan".score("HiMi") > "Hillsdale Michigan".score("Hil"), '"HiMi" should match "Hillsdale Michigan" higher then "Hil"');
-  #       ok("Hillsdale Michigan".score("HiMi") > "Hillsdale Michigan".score("illsda"));
-  #       ok("Hillsdale Michigan".score("HiMi") > "Hillsdale Michigan".score("hills"));
-  #       ok("Hillsdale Michigan".score("HiMi") < "Hillsdale Michigan".score("hillsd"));
-  #     });
+  it "will match despite wrong case" do
+    subject.score("hello").should be_greater_than(0)
+  end
 
-  #     test('Beginning of string bonus', function(){
-  #       expect(2);
-  #       ok("Hillsdale".score("hi") > "Chippewa".score("hi"));
-  #       ok("hello world".score("h") > "hello world".score("w"), 'should have a bonus for matching first letter');
-  #     });
+  it "scores progressively higher weighting on more matches" do
+    subject.score("e").should be_less_than(subject.score("h"))
+    subject.score("h").should be_less_than(subject.score("he"))
+    subject.score("hel").should be_less_than(subject.score("hell"))
+    subject.score("hell").should be_less_than(subject.score("hello"))
+    subject.score("hello").should be_less_than(subject.score("helloworld"))
+    subject.score("helloworl").should be_less_than(subject.score("hello worl"))
+    subject.score("hello worl").should be_less_than(subject.score("hello world"))
+  end
 
-  #     test('proper string weights', function(){
-  #       ok("Research Resources North".score('res') > "Mary Conces".score('res'), 'res matches "Mary Conces" better then "Research Resources North"');
+  it "provides a consecutive letter bonus" do
+    subject.score('Hel').should be_greater_than(subject.score('Hld'))
+  end
 
-  #       ok("Research Resources North".score('res') > "Bonnie Strathern - Southwest Michigan Title Search".score('res'));
-  #     });
+  it "gives an acronym bonus" do
+    subject.score('HW').should be_greater_than(subject.score('Ho'))
+    'yet another Hello World'.score('yaHW').should be_greater_than('Hello World'.score('yet another'))
+    "Hillsdale Michigan".score("HiMi").should be_greater_than("Hillsdale Michigan".score("Hill"))
 
-  #     test('Start of String bonus', function(){
-  #       ok("Mary Large".score('mar') > "Large Mary".score('mar'));
-  #       ok("Silly Mary Large".score('mar') === "Silly Large Mary".score('mar')); // ensure start of string bonus only on start of string
-  #     });
+    # I think these pass in error in the js version, will check
+    # "Hillsdale Michigan".score("HiMi").should be_greater_than("Hillsdale Michigan".score("hills"))
+    # "Hillsdale Michigan".score("HiMi").should be_greater_than("Hillsdale Michigan".score("hillsd"))
+    # "Hillsdale Michigan".score("HiMi").should be_greater_than("Hillsdale Michigan".score("illsda"))
+  end
 
-  #   module('Fuzzy String');
-  #     test('should score mismatched strings', function(){
-  #       expect(2);
-  #       equal('Hello World'.score('Hz'), 0, 'should score 0 without a specified fuzziness.');
-  #       ok('Hello World'.score('Hz', 0.5) < 'Hello World'.score('H', 0.5), 'fuzzy matches should be worse then good ones');
-  #     });
+  it "gives a bonus for matching the start of the string" do
+    "Hillsdale".score("hi").should be_greater_than("Chippewa".score("hi"))
+    "hello world".score("h").should be_greater_than("hello world".score("w"))
+  end
 
-  #     test('should be tuned well', function(){
-  #       expect(2);
-  #       ok("hello world".score("hello worl", 0.5) > "hello world".score("hello wor1", 0.5), 'mismatch should always be worse');
-  #       ok('Hello World'.score('jello',0.5) > 0, '"Hello World" should match "jello" more then 0 with a fuzziness of 0.5');
-  #     });
+  it "gives proper string weights" do
+    "Research Resources North".score('res').should be_greater_than("Mary Conces".score('res'))
+    "Research Resources North".score('res').should be_greater_than("Bonnie Strathern - Southwest Michigan Title Search".score('res'))
+  end
 
-  #     test('should have varying degrees of fuzziness', function(){
-  #       expect(1);
-  #       ok('Hello World'.score('Hz', 0.9) > 'Hello World'.score('Hz', 0.5), 'higher fuzziness should yield higher scores');
-  #     });
-  #   module('Benchmark');
-  #     test('Expand to see time to score', function(){
-  #       var iterations = 4000;
+  it "gives start of string bonuses" do
+    "Mary Large".score('mar').should be_greater_than("Large Mary".score('mar'))
+    "Silly Mary Large".score('mar').should be_about("Silly Large Mary".score('mar'))
+  end
 
-  #       var start1 = new Date().valueOf();
-  #       for(i=iterations;i>0;i--){ "hello world".score("h"); }
-  #       var end1 = new Date().valueOf();
-  #       var t1=end1-start1;
-  #       ok(true, t1 + ' miliseconds to do '+iterations+' iterations of "hello world".score("h")');
 
-  #       var start2 = new Date().valueOf();
-  #       for(i=iterations;i>0;i--){ "hello world".score("hw"); }
-  #       var end2 = new Date().valueOf();
-  #       var t2=end2-start2;
-  #       ok(true, t2 + ' miliseconds to do '+iterations+' iterations of "hello world".score("hw")');
+  it "can fuzzily match strings" do
+    subject.score('Hz').should == 0
+    subject.score('Hz', 0.5).should be_less_than(subject.score('H', 0.5))
+  end
 
-  #       var start3 = new Date().valueOf();
-  #       for(i=iterations;i>0;i--){ "hello world".score("hello world"); }
-  #       var end3 = new Date().valueOf();
-  #       var t3=end3-start3;
-  #       ok(true, t3 + ' miliseconds to do '+iterations+' iterations of "hello world".score("hello world")');
+  it "should be tuned well" do
+    "hello world".score("hello worl", 0.5).should be_greater_than("hello world".score("hello wor1", 0.5))
+    'Hello World'.score('jello',0.5).should be_greater_than(0)
+  end
 
-  #       var start4 = new Date().valueOf();
-  #       for(i=iterations;i>0;i--){ "hello any world that will listen".score("hlo wrdthlstn"); }
-  #       var end4 = new Date().valueOf();
-  #       var t4=end4-start4;
-  #       ok(true, t4 + ' miliseconds to do '+iterations+' iterations of "hello any world that will listen".score("hlo wrdthlstn")');
-
-  #       var start5 = new Date().valueOf();
-  #       for(i=iterations;i>0;i--){ "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.".score("Lorem i dor coecadipg et, Duis aute irure dole nulla. qui ofa mot am l"); }
-  #       var end5 = new Date().valueOf();
-  #       var t5=end5-start5;
-  #       ok(true, t5 + ' miliseconds to do '+iterations+' iterations of 446 character string scoring a 70 character match');
-
-  #       ok(true, 'score (smaller is faster): '+ (t1+t2+t3+t4+t5)/5);
-  #     });
-  # });
-
+  it "should have varying degrees of fuziness" do
+    subject.score('Hz', 0.9).should be_greater_than(subject.score('Hz', 0.5))
+  end
 
 end
-
-
-
