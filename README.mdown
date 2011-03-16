@@ -3,3 +3,39 @@ String Score (Ruby)
 
 Port of https://github.com/joshaven/string_score from js to ruby.
 
+It provides scores between 0 (no match) and 1 (exact match) for a comparison
+string to the base string.
+
+Usage
+---
+
+  gem install string_score
+
+  scorer = StringScore.new("string to test against")
+  scorer.score("string to test")
+
+Or, include it into String for a convenience method:
+
+
+  String.send(:include, StringScore)
+
+  # and then
+
+  "Hello World".score("hello")
+  "Hello World".score("Whirl", 0.5) # or for fuzzy
+
+Copyright
+---
+
+MIT License, see LICENSE file.
+
+Credits
+---
+
+Closely ported from the JS version, using roughly the same algorithm and
+the same test suite for implementation.
+
+JS Original Version at: https://github.com/joshaven/string_score
+Copyright (C) 2009-2011 Joshaven Potter
+Copyright (C) 2010-2011 Yesudeep Mangalapilly
+
