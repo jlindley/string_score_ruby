@@ -15,20 +15,20 @@ Tested under Ruby 1.9.2 and Ruby 1.8.7.
 Usage
 ---
 
-    gem install string_score
-    
+    $ gem install string_score
+
     scorer = StringScore.new("string to test against")
     scorer.score("string to test")
+    scorer.sort_by_score(['strings', 'to', 'sort'])
 
 Or, include it into String for a convenience method:
 
-
-    String.send(:include, StringScore)
-    
-    # and then
+    require 'string_score/ext/string'
     
     "Hello World".score("hello")
     "Hello World".score("Whirl", 0.5) # or for fuzzy
+    
+    "Hello World".sort_by_score(["xyz", "hello"]) #=> ["hello", "xyx"]
 
 Copyright
 ---
